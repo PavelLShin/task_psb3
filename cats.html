@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Эмуляция кормления котиков</title>
+    <link rel="stylesheet" type="text/css" href="./cats.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="form">
+        <div class="form_item">
+          <label for="sum cats">Количество котиков</label>
+          <input id="sum cats" type="number" class="cats_sum" />
+        </div>
+        <div class="form_item">
+          <label for="feed cats"
+            >Количество корма, которое котик кушает за раз</label
+          >
+          <input id="feed cats" type="number" class="feed_cats" />
+        </div>
+        <div class="form_item">
+          <label for="capacity">Вместимость миски</label>
+          <input id="capacity" type="number" class="capacity" />
+        </div>
+        <div class="form_item">
+          <label for="eating speed"
+            >Время, за которое котик съедает корм (с)</label
+          >
+          <input id="eating speed" type="number" class="eating_speed" />
+        </div>
+        <div class="form_item">
+          <label for="felling speed"
+            >Время, за котрое бабушка пополнит миску (с)</label
+          >
+          <input id="felling speed" type="number" class="felling_speed" />
+        </div>
+      </div>
+      <button onclick="startSimulation()">Запустить</button>
+      <div class="output"></div>
+    </div>
+    <script>
+      const output = document.querySelector('.output')
+
+      const catsSum = document.querySelector('.cats_sum')
+      const feedCats = document.querySelector('.feed_cats')
+      const capacity = document.querySelector('.capacity')
+      const eatingSpeed = document.querySelector('.eating_speed')
+      const fellingSpeed = document.querySelector('.felling_speed')
+
+      async function startSimulation() {
+        if (
+          catsSum.value &&
+          catsSum.value &&
+          capacity.value &&
+          eatingSpeed.value &&
+          fellingSpeed.value
+        ) {
+          if (feedCats.value <= capacity.value) {
+            let n = catsSum.value // количество котиков
+            let b = feedCats.value // сколько корма нужно котику, чтобы наесться
+            let m = capacity.value // вместимость миски
+            let t = eatingSpeed.value // время, за которое котик съедает корм
+            let r = fellingSpeed.value // время, чтобы бабушка пополнила миску
+            let i = 1
+            if (i <= n) {
+              let reloadPalte = m
+              let time = 0 // общее затраченное время
+              for (i; i <= n; i++) {
+                await new Promise((resolve) => setTimeout(resolve, 500))
+                output.innerHTML = `Котик ${i} подошёл к миске`
+                time = Number(time) + Number(t)
+                await new Promise((resolve) => setTimeout(resolve, t * 1000))
+                output.innerHTML = `Котик ${i} отошёл от миски`
+                reloadPalte = reloadPalte - b
+                if (b > reloadPalte && Number(i + 1) <= Number(n)) {
+                  await new Promise((resolve) => setTimeout(resolve, 1000))
+                  output.innerHTML = `Бабушка наполняет миску`
+                  await new Promise((resolve) => setInterval(resolve, r * 1000))
+                  reloadPalte = m
+                  time = Number(time) + Number(r)
+                }
+              }
+              await new Promise((resolve) => setTimeout(resolve, 1000))
+              catsSum.value = ''
+              feedCats.value = ''
+              capacity.value = ''
+              eatingSpeed.value = ''
+              fellingSpeed.value = ''
+              output.innerHTML = `Затрачено времени: ${time} секунд`
+            }
+          } else {
+            output.innerHTML = `В миске должно быть больше корма, чем может съесть один котик`
+          }
+        } else {
+          output.innerHTML = `Заполните все поля`
+        }
+      }
+    </script>
+  </body>
+</html>
